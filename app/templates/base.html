@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="">
+    <!-- START Head -->
+    <head>
+        <!-- START META SECTION -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        
+        <meta name="author" content="Muhamad Anjar">
+        <meta name="title" content="" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <title>{{ title }}</title>
+        
+        
+        <!--/ END META SECTION -->
+
+        <!-- START STYLESHEETS -->
+        
+
+        {% block 'style-head' %}
+
+        {% endblock %}
+        
+        <!-- Theme stylesheet : optional -->
+        
+
+        {% block 'style-theme' %}
+
+        {% endblock %}
+        <!--/ Theme stylesheet : optional -->
+
+        <!-- modernizr script -->
+        {% block 'script-head' %}
+
+        {% endblock %}
+
+        
+        <!--/ modernizr script -->
+        <!-- END STYLESHEETS -->
+        <!-- Scripts -->
+        <script>
+            
+        </script>
+    </head>
+    <!--/ END Head -->
+
+    <!-- START Body -->
+    <body class="{{ bodyClass }}">
+
+        {% block 'body' %}{% endblock %}
+        
+        <!-- START Template Main -->
+        
+        <!--/ END Template Main -->
+
+        <!-- START JAVASCRIPT SECTION (Load javascripts at bottom to reduce load time) -->
+        <!-- Application and vendor script : mandatory -->
+        
+
+        {% block 'script-body' %}
+
+        {% endblock %}
+        
+        <!--/ Application and vendor script : mandatory -->
+
+        <!-- Plugins and page level script : optional -->
+
+        {% block 'script-end' %}
+
+        {% endblock %}
+        
+        
+        <!--/ Plugins and page level script : optional -->
+        <!--/ END JAVASCRIPT SECTION -->
+    </body>
+    <!--/ END Body -->
+</html>
+
