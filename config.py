@@ -28,6 +28,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    FLASK_ENV = 'development'
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:xcWI3128@localhost/bahan_tes'
 
 

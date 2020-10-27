@@ -1,4 +1,7 @@
-from flask import render_template, redirect, url_for, abort, flash, request, current_app, make_response
+from flask import render_template, redirect, url_for, current_app
 from flask_sqlalchemy import get_debug_queries
+from app.main import main
 
-from app import db
+@main.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('map.html')

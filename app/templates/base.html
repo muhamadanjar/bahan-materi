@@ -18,20 +18,20 @@
         <!-- START STYLESHEETS -->
         
 
-        {% block 'style-head' %}
+        {% block style_head %}
 
         {% endblock %}
         
         <!-- Theme stylesheet : optional -->
         
 
-        {% block 'style-theme' %}
+        {% block style_theme %}
 
         {% endblock %}
         <!--/ Theme stylesheet : optional -->
 
         <!-- modernizr script -->
-        {% block 'script-head' %}
+        {% block script_head %}
 
         {% endblock %}
 
@@ -48,7 +48,7 @@
     <!-- START Body -->
     <body class="{{ bodyClass }}">
 
-        {% block 'body' %}{% endblock %}
+        {% block body %}{% endblock %}
         
         <!-- START Template Main -->
         
@@ -58,7 +58,7 @@
         <!-- Application and vendor script : mandatory -->
         
 
-        {% block 'script-body' %}
+        {% block script_body %}
 
         {% endblock %}
         
@@ -66,7 +66,7 @@
 
         <!-- Plugins and page level script : optional -->
 
-        {% block 'script-end' %}
+        {% block script_end %}
 
         {% endblock %}
         
