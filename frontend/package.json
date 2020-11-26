@@ -9,6 +9,7 @@
   "dependencies": {
     "babel-loader": "^8.2.1",
     "css-loader": "^5.0.1",
+    "global": "^4.4.0",
     "ol": "^6.4.3",
     "style-loader": "^2.0.0",
     "ts-loader": "^8.0.11",

@@ -36,7 +36,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:xcWI3128@localhost:5432/bahas_tes'
     SQLALCHEMY_BINDS = {
         'default':        SQLALCHEMY_DATABASE_URI,
-        'administrasi':   'postgresql://postgres:xcWI3128@localhost:5432/kotabogor'
+        'kotabogor':   'postgresql://postgres:xcWI3128@localhost:5432/kotabogor'
     }
 
 
