@@ -1,6 +1,6 @@
 .DS_Store
 */CACHE/*
-static
+# static
 build/*
 *.pyc
 *.pyo
@@ -28,3 +28,5 @@ deploy_log/*
 .vim
 .ipynb_checkpoints
 venv
+.env
+**node_modules

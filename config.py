@@ -20,6 +20,9 @@ class Config:
     FLASKY_FOLLOWERS_PER_PAGE = 50
     FLASKY_COMMENTS_PER_PAGE = 30
     FLASKY_SLOW_DB_QUERY_TIME = 0.5
+    STATIC_FOLDER = 'static'
+    TEMPLATES_FOLDER = 'templates'
+    FLASK_RUN_PORT = 8000
 
     @staticmethod
     def init_app(app):
@@ -29,10 +32,23 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     FLASK_ENV = 'development'
-    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:xcWI3128@localhost/bahan_tes'
+    ENV = 'development'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:xcWI3128@localhost:5432/bahas_tes'
+    SQLALCHEMY_BINDS = {
+        'default':        SQLALCHEMY_DATABASE_URI,
+        'administrasi':   'postgresql://postgres:xcWI3128@localhost:5432/kotabogor'
+    }
+
+
+
+class ProductionConfig(Config):
+    DEBUG = False
+    ENV = 'production'
+    TESTING = False
 
 
 config = {
     'development': DevelopmentConfig,
+    'prod': ProductionConfig,
     'default': DevelopmentConfig
 }

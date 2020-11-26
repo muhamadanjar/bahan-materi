@@ -3,9 +3,86 @@
 {% block body %}
 
 <div id="map" class="map">
-ini map
+    <div class="container-photo">
+        <div class="owl-carousel">
+            <div class="item" style="width:250px"><h4>1</h4></div>
+            <div class="item" style="width:100px"><h4>2</h4></div>
+            <div class="item" style="width:500px"><h4>3</h4></div>
+            <div class="item" style="width:100px"><h4>4</h4></div>
+            <div class="item" style="width:50px"><h4>6</h4></div>
+            <div class="item" style="width:250px"><h4>7</h4></div>
+            <div class="item" style="width:120px"><h4>8</h4></div>
+            <div class="item" style="width:420px"><h4>9</h4></div>
+            <div class="item" style="width:120px"><h4>10</h4></div>
+            <div class="item" style="width:300px"><h4>11</h4></div>
+            <div class="item" style="width:450px"><h4>12</h4></div>
+            <div class="item" style="width:220px"><h4>13</h4></div>
+            <div class="item" style="width:150px"><h4>14</h4></div>
+            <div class="item" style="width:600px"><h4>15</h4></div>
+        </div>
+    </div>
+    
 </div>
 
 {% endblock %}
+
+{% block style_head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='ol/ol.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='owlcarousel/assets/owl.carousel.min.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='owlcarousel/assets/owl.theme.default.min.css')}}">
+{% endblock style_head %}
+
+{% block style_theme %}
+    
+    <style>
+        #map, .map{
+            width: 100%;
+            height: 100vh;
+        }
+        .container-photo{
+            bottom: 0;
+            position: absolute;
+            display: none;
+        }
+        .container-photo.open{
+            display: block;
+        }
+    </style>
+{% endblock style_theme %}
+
+{% block script_end %}
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='ol/ol.js') }}"></script>
+<script src="{{ url_for('static', filename='owlcarousel/owl.carousel.min.js') }}"></script>
+<script>
+ let map, view;
+view = new ol.View({
+    center: ol.proj.fromLonLat([106.8208828, -6.6169003]),
+    zoom: 13
+});
+map = new ol.Map({
+    target: 'map',
+    view: view,
+    layers: [
+        new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: 'http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
+            }
+            )
+        })
+    ]
+});
+
+$(".owl-carousel").owlCarousel({
+    margin:10,
+    loop:true,
+    autoWidth:true,
+    items:4
+});
+</script>
+
+
+{% endblock script_end %}
 
 
