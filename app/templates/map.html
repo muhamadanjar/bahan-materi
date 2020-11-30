@@ -61,12 +61,17 @@
 <script>
  let map, view;
  let mode = 'nearest_poi';
+ let parser = new ol.format.GeoJSON()
  const transform = ol.proj.getTransform('EPSG:3857',"EPSG:4326")
     view = new ol.View({
         center: ol.proj.fromLonLat([106.8208828, -6.6169003]),
         zoom: 13
     });
     let vl_poi = new ol.layer.Vector({
+        source: new ol.source.Vector()
+    });
+    
+    let vl_admin = new ol.layer.Vector({
         source: new ol.source.Vector()
     });
     map = new ol.Map({
@@ -79,23 +84,20 @@
                 }
                 )
             }),
+            vl_admin,
             vl_poi
         ]
     });
+    get_admin();
 
-map.on('singleclick',function(e){
-    let coordinate = e.coordinate;
-    let hdms = ol.coordinate.toStringHDMS(coordinate);
-    console.log(coordinate)
-    let coord4326 = transform([coordinate[0], coordinate[1]])
-    console.log(coord4326)
-    get_poi(coord4326[1], coord4326[0])
-});
+map.on('singleclick', onMapClick);
+
+map.on('moveend', onMoveEnd);
 
 async function get_bbox(minx, miny, maxx, maxy){
     const res = await axios.get(`${window.location.origin}/get_bbox`);
     const response = res.data;
-    
+    console.log(response);
 }
 async function get_poi(lat, lon){
     vl_poi.getSource().clear();
@@ -110,6 +112,19 @@ async function get_poi(lat, lon){
         vl_poi.getSource().addFeature(feature)
     }
     
+}
+
+async function get_admin(){
+    const res = await axios.get(`${window.location.origin}/get_administrasi`)
+    const response = res.data;
+    const resdata = response.data;
+    vl_admin.getSource().clear()
+    for(let i=0;i < resdata.length; i++){
+        const el = resdata[i];
+        console.log(el)
+        let features = parser.readFeatures(el.geojson);
+        vl_admin.getSource().addFeatures(features);
+    }
 }
 
 function generate_point(props = NULL) {
@@ -135,6 +150,10 @@ function generate_point(props = NULL) {
     return;
 }
 
+function change_mode(newmode){
+    mode = newmode;
+}
+
 function default_icon() {
     return new ol.style.Style({
         image: new ol.style.Icon({
@@ -147,6 +166,32 @@ function default_icon() {
     });
 }
 
+
+function onMoveEnd(evt) {
+    let map = evt.map;
+    let extent = map.getView().calculateExtent(map.getSize());
+    let bottomLeft = ol.proj.transform(ol.extent.getBottomLeft(extent),
+        'EPSG:3857', 'EPSG:4326');
+    let topRight = ol.proj.transform(ol.extent.getTopRight(extent),
+        'EPSG:3857', 'EPSG:4326');
+    get_bbox(wrapLon(bottomLeft[0]), bottomLeft[1], wrapLon(topRight[0]), topRight[1])
+}
+
+
+function onMapClick(evt){
+    let coordinate = evt.coordinate;
+    let hdms = ol.coordinate.toStringHDMS(coordinate);
+    
+    let coord4326 = transform([coordinate[0], coordinate[1]])
+    if( mode == 'nearest_poi'){
+        get_poi(coord4326[1], coord4326[0])
+    }
+}
+
+function wrapLon(value) {
+    var worlds = Math.floor((value + 180) / 360);
+    return value - (worlds * 360);
+}
 $(".owl-carousel").owlCarousel({
     margin:10,
     loop:true,

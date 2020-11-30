@@ -68,7 +68,7 @@ def new_photos():
 
 
 @main.route('/get_poi', methods=['GET'])
-def get_poi():
+def get_nearest_poi():
     lat = request.args.get('lat', -6.6160933)
     lon = request.args.get('lon', 106.8266368)
     lonlat = str(lon) + ' ,' + str(lat)
@@ -93,7 +93,7 @@ def get_poi():
     return jsonify({'status':'success', 'data': output})
 
 @main.route('/get_bbox', methods=['GET'])
-def get_nearest_poi():
+def get_bbox():
     engine = create_engine(config['default'].SQLALCHEMY_BINDS['kotabogor'])
     minx = request.args.get('minx', 0)
     miny = request.args.get('miny', 0)
@@ -102,7 +102,7 @@ def get_nearest_poi():
     bbox = str(minx) + ',' + str(miny) + ',' + str(maxx) + ',' + str(maxy)
     sql = """SELECT kegiatan, nama_objek  FROM tematik.gis_poi 
         WHERE ST_Intersects(
-            ST_SetSRID(ST_MakePoint(lon, lat), 4326), 
+            ST_SetSRID(ST_MakePoint(ST_X(wkb_geometry), st_y(wkb_geometry)), 4326), 
             ST_MakeEnvelope(%s, 4326)
         )='t' """ % (bbox)
     with engine.connect() as con:
@@ -115,5 +115,21 @@ def get_nearest_poi():
             for key, val in zip(resultkey, item):
                 inner[key] = str(val)
             output.append(inner)
-        jsonout = json.dumps(output)
-    return Response(jsonout, mimetype='application/json')
+        return jsonify({'status':'success', 'data': output})
+
+@main.route('/get_administrasi')
+def get_administrasi():
+    engine = create_engine(config['default'].SQLALCHEMY_BINDS['kotabogor'])
+    sql = "SELECT kode_kec, kecamatan, st_asgeojson(st_transform(geom, 3857),15,0)::json as geojson from administrasi.gis_admin_kec"
+    with engine.connect() as con:
+        result = con.execute(text(sql))
+        resultkey = con.execute(text(sql)).keys()
+        rows = result.fetchall()
+        output = []
+        for item in rows:
+            inner = {}
+            for key, val in zip(resultkey, item):
+                vf = val if key == 'geojson' else str(val)
+                inner[key] = vf
+            output.append(inner)
+        return jsonify({'status': 'success', 'data': output})
