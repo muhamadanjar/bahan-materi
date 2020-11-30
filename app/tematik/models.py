@@ -2,11 +2,46 @@
 from app import db
 
 
+class GisBangunan(db.Model):
+    __tablename__ = 'gis_bangunan'
+    __table_args__ = {'schema': 'tematik'}
+    __bind_key__ = 'tematik'
+    id = db.Column(db.BigInteger, primary_key=True)
+    gid = db.Column(db.BigInteger)
+    fid_gis_ba = db.Column(db.Numeric)
+    objectid = db.Column(db.Numeric)
+    jenis = db.Column(db.String(250))
+    nama = db.Column(db.String(250))
+    sumber = db.Column(db.String(250))
+    fid_batas_ = db.Column(db.Numeric)
+    kecamatan = db.Column(db.String(254))
+
+
+class GisPoi(db.Model):
+    __tablename__ = 'gis_poi'
+    __table_args__ = {'schema': 'tematik'}
+    __bind_key__ = 'kotabogor'
+
+    ogc_fid = db.Column(db.Integer, primary_key=True)
+    gid = db.Column(db.Float(53))
+    jenis_utam = db.Column(db.String(50))
+    jenis_ = db.Column(db.String(50))
+    kegiatan = db.Column(db.String(50))
+    nama_objek = db.Column(db.String(100))
+
+    def get_table_name(self):
+        from sqlalchemy import inspect
+        mapper = inspect(self)
+        return mapper.tables[0].name
+
+
 class GisBwk(db.Model):
     __tablename__ = 'gis_bwk'
     __table_args__ = {'schema': 'tematik'}
+    __bind_key__ = 'kotabogor'
 
-    id_4 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_4 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_3 = db.Column(db.Integer)
     id_2 = db.Column(db.Integer)
     id_1 = db.Column(db.Integer)
@@ -22,12 +57,13 @@ class GisBwk(db.Model):
     hectares = db.Column(db.Float(53))
 
 
-
 class GisJenisTanah(db.Model):
     __tablename__ = 'gis_jenis_tanah'
     __table_args__ = {'schema': 'tematik'}
+    __bind_key__ = 'kotabogor'
 
-    id_2 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_2 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
     id = db.Column(db.Integer)
@@ -36,12 +72,12 @@ class GisJenisTanah(db.Model):
     luas_ha = db.Column(db.Float(53))
 
 
-
 class GisKelasLereng(db.Model):
     __tablename__ = 'gis_kelas_lereng'
     __table_args__ = {'schema': 'tematik'}
 
-    id_2 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_2 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
     id = db.Column(db.Integer)
@@ -50,12 +86,12 @@ class GisKelasLereng(db.Model):
     luas_ha = db.Column(db.Float(53))
 
 
-
 class GisPenggunaanLahan(db.Model):
     __tablename__ = 'gis_penggunaan_lahan'
     __table_args__ = {'schema': 'tematik'}
 
-    id_1 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_1 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_0 = db.Column(db.Integer)
     id = db.Column(db.BigInteger)
     gid = db.Column(db.BigInteger)
@@ -71,12 +107,12 @@ class GisPenggunaanLahan(db.Model):
     luas_m = db.Column(db.Float(53))
 
 
-
 class GisPenutupLahan(db.Model):
     __tablename__ = 'gis_penutup_lahan'
     __table_args__ = {'schema': 'tematik'}
 
-    id_1 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_1 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id = db.Column(db.BigInteger)
     id_0 = db.Column(db.BigInteger)
     gid = db.Column(db.BigInteger)
@@ -87,12 +123,12 @@ class GisPenutupLahan(db.Model):
     kecamatan = db.Column(db.String(254))
 
 
-
 class GisPersilTanah(db.Model):
     __tablename__ = 'gis_persil_tanah'
     __table_args__ = {'schema': 'tematik'}
 
-    id_2 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_2 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
     id = db.Column(db.Integer)
@@ -103,12 +139,12 @@ class GisPersilTanah(db.Model):
     tahun = db.Column(db.Float(53))
 
 
-
 class GisPola(db.Model):
     __tablename__ = 'gis_pola'
     __table_args__ = {'schema': 'tematik'}
 
-    id_3 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_3 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_2 = db.Column(db.Integer)
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
@@ -123,12 +159,12 @@ class GisPola(db.Model):
     luas_m = db.Column(db.Float(53))
 
 
-
 class GisSaranaPerkotaan(db.Model):
     __tablename__ = 'gis_sarana_perkotaan'
     __table_args__ = {'schema': 'tematik'}
 
-    id_3 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_3 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_2 = db.Column(db.Integer)
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
@@ -139,12 +175,12 @@ class GisSaranaPerkotaan(db.Model):
     lokasi = db.Column(db.String(100))
 
 
-
 class GisStatusTanah(db.Model):
     __tablename__ = 'gis_status_tanah'
     __table_args__ = {'schema': 'tematik'}
 
-    id_3 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_3 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_2 = db.Column(db.Integer)
     id_1 = db.Column(db.Integer)
     id_0 = db.Column(db.Integer)
@@ -154,24 +190,24 @@ class GisStatusTanah(db.Model):
     tahun = db.Column(db.Float(53))
 
 
-
 class GisTowerExisting(db.Model):
     __tablename__ = 'gis_tower_existing'
     __table_args__ = {'schema': 'tematik'}
 
-    id_1 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_1 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_0 = db.Column(db.Integer)
     id = db.Column(db.Integer)
     gid = db.Column(db.Integer)
     nomor = db.Column(db.String(50))
 
 
-
 class GisTowerNew(db.Model):
     __tablename__ = 'gis_tower_new'
     __table_args__ = {'schema': 'tematik'}
 
-    id_1 = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id_1 = db.Column(db.Integer, primary_key=True,
+                     server_default=db.FetchedValue())
     id_0 = db.Column(db.Integer)
     id = db.Column(db.Integer)
     gid = db.Column(db.Integer)

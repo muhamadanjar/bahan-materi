@@ -60,22 +60,92 @@
 <script src="{{ url_for('static', filename='owlcarousel/owl.carousel.min.js') }}"></script>
 <script>
  let map, view;
-view = new ol.View({
-    center: ol.proj.fromLonLat([106.8208828, -6.6169003]),
-    zoom: 13
+ let mode = 'nearest_poi';
+ const transform = ol.proj.getTransform('EPSG:3857',"EPSG:4326")
+    view = new ol.View({
+        center: ol.proj.fromLonLat([106.8208828, -6.6169003]),
+        zoom: 13
+    });
+    let vl_poi = new ol.layer.Vector({
+        source: new ol.source.Vector()
+    });
+    map = new ol.Map({
+        target: 'map',
+        view: view,
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.XYZ({
+                    url: 'http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
+                }
+                )
+            }),
+            vl_poi
+        ]
+    });
+
+map.on('singleclick',function(e){
+    let coordinate = e.coordinate;
+    let hdms = ol.coordinate.toStringHDMS(coordinate);
+    console.log(coordinate)
+    let coord4326 = transform([coordinate[0], coordinate[1]])
+    console.log(coord4326)
+    get_poi(coord4326[1], coord4326[0])
 });
-map = new ol.Map({
-    target: 'map',
-    view: view,
-    layers: [
-        new ol.layer.Tile({
-            source: new ol.source.XYZ({
-                url: 'http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
-            }
-            )
-        })
-    ]
-});
+
+async function get_bbox(minx, miny, maxx, maxy){
+    const res = await axios.get(`${window.location.origin}/get_bbox`);
+    const response = res.data;
+    
+}
+async function get_poi(lat, lon){
+    vl_poi.getSource().clear();
+    const response = await axios.get(`${window.location.origin}/get_poi?lat=${lat}&lon=${lon}`);
+    let res = response.data;
+    let resdata = res.data;
+    console.log(resdata);
+    for(let i = 0; i < resdata.length; i++){
+        const el = resdata[i];
+        let props = { latitude: el.latitude, longitude: el.longitude }
+        let feature = generate_point(props);
+        vl_poi.getSource().addFeature(feature)
+    }
+    
+}
+
+function generate_point(props = NULL) {
+    const transform4326to3857 = ol.proj.getTransform("EPSG:4326", "EPSG:3857");
+    let feature = new ol.Feature(props);
+    const iconStyle = default_icon();
+    feature.setStyle(iconStyle);
+    if (props.longitude == null && props.latitude == null) {
+        console.log("kordinat salah");
+        return false;
+    } else {
+        const coordinate = transform4326to3857([
+            parseFloat(props.longitude),
+            parseFloat(props.latitude),
+        ]);
+        if (!isNaN(coordinate[0]) && !isNaN(coordinate[1])) {
+            const geometry = new ol.geom.Point(coordinate);
+            feature.setGeometry(geometry);
+            return feature;
+        }
+    }
+
+    return;
+}
+
+function default_icon() {
+    return new ol.style.Style({
+        image: new ol.style.Icon({
+            anchor: [0.2, 32],
+            anchorXUnits: "fraction",
+            anchorYUnits: "pixels",
+            src: "http://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi2.png",
+            scale: 0.7,
+        }),
+    });
+}
 
 $(".owl-carousel").owlCarousel({
     margin:10,
