@@ -52,8 +52,7 @@
 <!-- <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/dist/css/bootstrap.min.css')}}"> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="{{ url_for('static', filename='ol/ol.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='owlcarousel/assets/owl.carousel.min.css')}}">
-<link rel="stylesheet" href="{{ url_for('static', filename='owlcarousel/assets/owl.theme.default.min.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='') }}">
 {% endblock style_head %}
 
 {% block style_theme %}
@@ -245,7 +244,17 @@
     let parser = new ol.format.GeoJSON();
     let mode_dom = $('#mode');
     let selected_features;
-    let selectInteraction = new ol.interaction.Select()
+    let selectInteraction = new ol.interaction.Select({
+        style: new ol.style.Style({ 
+             fill: new ol.style.Fill({ 
+                 color: "rgba(255,0,0,0.1)", 
+             }), 
+             stroke: new ol.style.Stroke({ 
+                 color: "#f00", 
+                 width: 5, 
+             }), 
+         }), 
+    });
     let dragBoxInteraction  = new ol.interaction.DragBox()
     
     const transform = ol.proj.getTransform('EPSG:3857', "EPSG:4326")
@@ -273,6 +282,7 @@
     map = new ol.Map({
         target: 'map',
         view: view,
+        renderer: 'canvas',
         layers: [
             new ol.layer.Tile({
                 source: new ol.source.XYZ({
@@ -284,6 +294,9 @@
             vl_pinpoly
         ]
     });
+    let zoomslider = new ol.control.ZoomSlider();
+    map.addControl(zoomslider);
+
     get_admin();
 
     map.on('singleclick', onMapClick);
@@ -303,8 +316,8 @@
     });
 
 
-    map.addInteraction(selectInteraction);
-    map.addInteraction(dragBoxInteraction);
+    //map.addInteraction(selectInteraction);
+    //map.addInteraction(dragBoxInteraction);
 
     selected_features = selectInteraction.getFeatures();
 
@@ -462,19 +475,23 @@
 
 
     function change_mode(newmode) {
+        map.removeInteraction(selectInteraction);
+        map.removeInteraction(dragBoxInteraction);
         vl_pinpoly.getSource().clear();
         vl_poi.getSource().clear();
         mode = newmode;
         if (newmode == 'nearest_poi') {
             $('.form-bbox').addClass('d-none');
             $('.form-pip').addClass('d-none');
+            map.addInteraction(selectInteraction);
         } else if (newmode == 'point_in_polygon') {
-            map.removeInteraction(selectInteraction);
             $('.form-pip').removeClass('d-none');
             $('.form-bbox').addClass('d-none');
-        } else {
+            map.addInteraction(selectInteraction);
+        } else if(newmode == 'photo_bbox') {
             $('.form-pip').addClass('d-none');
             $('.form-bbox').removeClass('d-none');
+            map.addInteraction(dragBoxInteraction);
         }
     }
 

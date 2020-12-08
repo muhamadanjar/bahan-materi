@@ -14,6 +14,7 @@ from .forms import PhotoForm
 from werkzeug.utils import secure_filename
 from app.main.schemas import JenisTanahSchema, PoiSchema
 import socket
+from flask_cors import cross_origin
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -125,6 +126,7 @@ def get_bbox():
 
 
 @main.route('/get_administrasi')
+@cross_origin()
 def get_administrasi():
     engine = create_engine(config['default'].SQLALCHEMY_BINDS['kotabogor'])
     sql = "SELECT kode_kec, kecamatan, st_asgeojson(st_transform(geom, 3857),15,0)::json as geojson from administrasi.gis_admin_kec"
@@ -184,3 +186,24 @@ def get_pip():
         rows = result.fetchall()
         jml = len(rows)
         return jsonify({'status': 'success', 'data': jml})
+
+
+@main.route('/get_3d')
+@cross_origin()
+def get_3d():
+    engine = create_engine(config['default'].SQLALCHEMY_BINDS['default'])
+    
+    sql = """ SELECT st_asgeojson(st_transform(geom, 3857))::json as geojson FROM public.kota_building"""
+    with engine.connect() as con:
+        result = con.execute(text(sql))
+        resultkey = result.keys()
+        rows = result.fetchall()
+        output = []
+        for item in rows:
+            inner = {}
+            for key, val in zip(resultkey, item):
+                vf = val if key == 'geojson' else str(val)
+                inner[key] = vf
+            output.append(inner)
+        
+        return jsonify({'status': 'success', 'data': output})

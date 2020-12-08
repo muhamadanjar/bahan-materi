@@ -1,7 +1,18 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
+
+
 module.exports = {
-  entry: "./src/index.ts",
+  entry: {
+    app: {
+      import:"./src/index.js",
+      dependOn: 'vendors'
+    },
+    "vendors": ["ol"]
+  },
+  mode: 'production',
   devtool: "inline-source-map",
   module: {
     rules: [
@@ -12,7 +23,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"],
+        use: ["style-loader", "css-loader",]  ,
       },
     ],
   },
@@ -20,12 +31,44 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {
-    filename: "bundle.js",
-    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+    path: path.resolve(__dirname, "public"),
   },
   plugins: [
     new HtmlWebpackPlugin({
       template: "./src/index.html",
+      scripts: ['cesium/Cesium.js']
+
     }),
+    new MiniCssExtractPlugin()
   ],
+  devServer: {
+    contentBase: path.join(__dirname, 'public'),
+    compress: true,
+    port: 9000
+  },
+  optimization:{
+    runtimeChunk: "single"
+  },
+  // minimizer: [
+  //   new UglifyJSPlugin({
+  //     uglifyOptions: {
+  //       sourceMap: true,
+  //       compress: {
+  //         drop_console: true,
+  //         conditionals: true,
+  //         unused: true,
+  //         comparisons: true,
+  //         dead_code: true,
+  //         if_return: true,
+  //         join_vars: true,
+  //         warnings: false
+  //       },
+  //       output: {
+  //         comments: false
+  //       }
+  //     }
+  //   })
+  // ]
+
 };
