@@ -2,18 +2,18 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-
+const webpack = require('webpack')
 
 module.exports = {
   entry: {
     app: {
       import:"./src/index.js",
-      dependOn: 'vendors'
+      // dependOn: 'vendors'
     },
-    "vendors": ["ol"]
+    // "vendors": ["ol", 'axios']
   },
   mode: 'production',
-  devtool: "inline-source-map",
+  // devtool: "inline-source-map",
   module: {
     rules: [
       {
@@ -40,7 +40,7 @@ module.exports = {
       scripts: ['cesium/Cesium.js']
 
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
   ],
   devServer: {
     contentBase: path.join(__dirname, 'public'),
@@ -48,8 +48,23 @@ module.exports = {
     port: 9000
   },
   optimization:{
-    runtimeChunk: "single"
-  },
+    runtimeChunk: "single",
+    splitChunks: {
+      chunks: 'all',
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      // cacheGroups:{
+      //   vendor:{
+      //     test: /[\\/]node_modules[\\/]/,
+      //     name(module){
+      //       const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$/)[1];
+      //       return `npm.${packageName.replace('@', '')}`;
+      //     }
+      //   }
+      // }
+      
+    }
+  }
   // minimizer: [
   //   new UglifyJSPlugin({
   //     uglifyOptions: {
