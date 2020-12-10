@@ -92,7 +92,7 @@ def get_nearest_poi():
             for key, val in zip(resultkey, item):
                 inner[key] = str(val)
             output.append(inner)
-    return jsonify({'status':'success', 'data': output})
+    return jsonify({'status': 'success', 'data': output})
 
 
 @main.route('/get_bbox', methods=['GET'])
@@ -103,7 +103,7 @@ def get_bbox():
     maxx = request.args.get('xmax', 0)
     maxy = request.args.get('ymax', 0)
     bbox = str(minx) + ',' + str(miny) + ',' + str(maxx) + ',' + str(maxy)
-    sql = """SELECT kegiatan, nama_objek  FROM tematik.gis_poi 
+    sql = """SELECT kegiatan, nama_objek, ST_X(st_transform(wkb_geometry, 4326)) as longitude, ST_Y(st_transform(wkb_geometry, 4326)) as latitude  FROM tematik.gis_poi 
         WHERE ST_Intersects(
             ST_SetSRID(
                 ST_MakePoint(
@@ -120,16 +120,28 @@ def get_bbox():
         for item in rows:
             inner = {}
             for key, val in zip(resultkey, item):
-                inner[key] = str(val)
+                inner[key] = (val)
             output.append(inner)
-        return jsonify({'status':'success', 'data': output})
+        return jsonify({'status': 'success', 'data': output})
 
 
 @main.route('/get_administrasi')
 @cross_origin()
 def get_administrasi():
     engine = create_engine(config['default'].SQLALCHEMY_BINDS['kotabogor'])
-    sql = "SELECT kode_kec, kecamatan, st_asgeojson(st_transform(geom, 3857),15,0)::json as geojson from administrasi.gis_admin_kec"
+    sql = """SELECT
+            kode_kec,
+            kecamatan, 
+            jsonb_build_object(
+                'type',       'Feature',
+                'id',         id_1 ,
+                'geometry',   ST_AsGeoJSON(st_transform(geom, 3857))::json,
+                'properties', json_build_object(
+                    'kecamatan', kecamatan,
+                    'kode_kec', kode_kec
+                )
+            )::json as geojson
+        from administrasi.gis_admin_kec"""
     with engine.connect() as con:
         result = con.execute(text(sql))
         resultkey = con.execute(text(sql)).keys()
@@ -180,7 +192,7 @@ def get_pip():
               WHERE ST_Contains(
 	            st_transform(gak.geom, 4326), 
 	            st_setsrid(st_makepoint(%s), 4326))""" % (lonlat)
-    
+
     with engine.connect() as con:
         result = con.execute(text(sql))
         rows = result.fetchall()
@@ -192,7 +204,7 @@ def get_pip():
 @cross_origin()
 def get_3d():
     engine = create_engine(config['default'].SQLALCHEMY_BINDS['default'])
-    
+
     sql = """ SELECT st_asgeojson(st_transform(geom, 3857))::json as geojson FROM public.kota_building"""
     with engine.connect() as con:
         result = con.execute(text(sql))
@@ -205,5 +217,6 @@ def get_3d():
                 vf = val if key == 'geojson' else str(val)
                 inner[key] = vf
             output.append(inner)
-        
+
         return jsonify({'status': 'success', 'data': output})
+
